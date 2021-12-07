@@ -6,7 +6,7 @@ fn main() {
     count_in_windows(&contents);
 }
 
-fn count_measurements(contents: &String) {
+fn count_measurements(contents: &String) -> u16 {
     let mut previous: u16 = u16::MAX;
     let mut increased: u16 = 0;
 
@@ -22,9 +22,10 @@ fn count_measurements(contents: &String) {
         }
     });
     println!("There are {} measurements greater than the previous", increased);
+    increased
 }
 
-fn count_in_windows(contents: &String) {
+fn count_in_windows(contents: &String) -> u16 {
     let lines: Vec<&str> = contents.lines().collect();
     let mut last_window: u16 = u16::MAX;
     let mut increased_windows: u16 = 0;
@@ -39,4 +40,22 @@ fn count_in_windows(contents: &String) {
     });
 
     println!("There are {} measurement windows greater than the previous", increased_windows);
+    increased_windows
+}
+
+#[test]
+fn test_counts() {
+    let input: String = "199
+200
+208
+210
+200
+207
+240
+269
+260
+263".to_string();
+    println!("{}", input);
+    assert_eq!(count_measurements(&input), 7);
+    assert_eq!(count_in_windows(&input), 5);
 }
