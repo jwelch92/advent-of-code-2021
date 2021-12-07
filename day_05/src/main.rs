@@ -1,27 +1,26 @@
 use std::cmp::{max, min};
 use std::fs;
-use std::path::Display;
 
 #[derive(Debug, Default)]
 struct Line {
     a: Point,
-    b: Point
+    b: Point,
 }
 
 enum Direction {
     Vertical,
     Horizontal,
-    Diagonal
+    Diagonal,
 }
 
 impl Line {
-    fn new() -> Self {
-        Default::default()
-    }
+    // fn new() -> Self {
+    //     Default::default()
+    // }
 
-    fn is_vertical_or_horizontal(&self) -> bool {
-        self.a.shares_axis(self.b)
-    }
+    // fn is_vertical_or_horizontal(&self) -> bool {
+    //     self.a.shares_axis(self.b)
+    // }
 
     fn is_vertical(&self) -> bool {
         self.a.shares_x(self.b)
@@ -33,7 +32,7 @@ impl Line {
 
     fn direction(&self) -> Direction {
         if self.is_vertical() {
-           Direction::Vertical
+            Direction::Vertical
         } else if self.is_horizontal() {
             Direction::Horizontal
         } else {
@@ -41,7 +40,6 @@ impl Line {
         }
     }
 }
-
 
 
 impl From<&str> for Line {
@@ -60,13 +58,13 @@ impl From<&str> for Line {
 #[derive(Debug, Ord, PartialOrd, Eq, PartialEq, Default, Copy, Clone)]
 struct Point {
     x: usize,
-    y: usize
+    y: usize,
 }
 
 impl Point {
-    fn shares_axis(&self, other: Point) -> bool {
-        self.shares_x(other) || self.shares_y(other)
-    }
+    // fn shares_axis(&self, other: Point) -> bool {
+    //     self.shares_x(other) || self.shares_y(other)
+    // }
 
     fn shares_x(&self, other: Point) -> bool {
         self.x == other.x
@@ -117,33 +115,31 @@ fn count_intersections(grid: &Vec<Vec<u16>>) -> usize {
 fn main() {
     let contents: String = fs::read_to_string("input.txt").expect("Error opening file");
     let mut lines: Vec<Line> = vec![];
-    let mut grid: Vec<Vec<u16>> = vec![vec![0; 1000]; 1000];
+    let mut grid: Vec<Vec<u16>> = vec![vec![0; 1200]; 1200];
     for line in contents.lines() {
         lines.push(Line::from(line))
     }
     for line in &lines {
-
         match line.direction() {
             Direction::Diagonal => {
-                let start_x = min(line.a.x, line.b.x);
-                // Add one to account for inclusive points
-                let end_x = max(line.a.x, line.b.x) + 1;
+                let mut x_rate: isize = 1;
+                let mut y_rate: isize = 1;
 
-                let start_y = min(line.a.y, line.b.y);
-                let end_y = max(line.a.y, line.b.y) + 1;
-
-                let mut x = start_x;
-                let mut y = start_y;
-
-                while x <= end_x && y <= end_y {
-                    grid[y][x] += 1;
-                    x +=1;
-                    y +=1;
+                if line.a.x > line.b.x {
+                    x_rate = -1;
                 }
-
-
-
-            },
+                if line.a.y > line.b.y {
+                    y_rate = -1;
+                }
+                let delta: isize = (line.b.x as isize - line.a.x as isize).abs();
+                let x1 = line.a.x as isize;
+                let y1 = line.a.y as isize;
+                for i in 0..=delta {
+                    let x = x1 + (i * x_rate);
+                    let y = y1 + (i * y_rate);
+                    grid[y as usize][x as usize] += 1;
+                }
+            }
             Direction::Horizontal => {
                 let start = min(line.a.x, line.b.x);
                 // Add one to account for inclusive points
@@ -153,7 +149,7 @@ fn main() {
                 for i in start..=end {
                     grid[y][i] += 1;
                 }
-            },
+            }
             Direction::Vertical => {
                 let start = min(line.a.y, line.b.y);
                 let end = max(line.a.y, line.b.y);
@@ -168,5 +164,4 @@ fn main() {
     print_grid(&grid);
     let intersections = count_intersections(&grid);
     println!("Got {} intersections", intersections);
-    // TODO guess 21981 and it was too high
 }
