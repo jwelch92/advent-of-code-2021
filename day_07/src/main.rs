@@ -1,7 +1,7 @@
-use std::fs;
+extern crate aoc;
 
 fn main() {
-    let contents: String = fs::read_to_string("input.txt").expect("Error opening file");
+    let contents: String = aoc::aoc::read_input("input.txt");
     solve_one(&contents);
     solve_two(&contents);
 }
