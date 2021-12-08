@@ -3,6 +3,7 @@ use std::fs;
 fn main() {
     let contents: String = fs::read_to_string("input.txt").expect("Error opening file");
     solve_one(&contents);
+    solve_two(&contents);
 }
 
 fn solve_one(contents: &String) -> usize {
@@ -17,14 +18,43 @@ fn solve_one(contents: &String) -> usize {
     dist as usize
 }
 
+fn solve_two(contents: &String) -> usize {
+    let numbers: Vec<isize> = contents.trim().split(",").map(|x| x.parse().unwrap()).collect();
+    // Get min and max
+    let max: &isize = numbers.iter().max().unwrap();
+    let min: &isize = numbers.iter().min().unwrap();
+    println!("Numbers {:?} max={} min={}", numbers, max, min);
+    // check each candidate between min and max for the potential "median"
+    let least_fuel: isize = (*min..=*max)
+        .into_iter()
+        .map(|cand| {
+            numbers.iter().map(|n| {
+                // compute abs distance for each crab
+                let dist = (cand - n).abs();
+                // get the fuel cost for the distance where each additional space costs 1 more than the previous
+                let a: isize = ((1 + dist) * dist) / 2;
+                a
+            }).sum()
+        })
+        .min()
+        .unwrap();
+    println!("Least fuel {}", least_fuel);
+    least_fuel as usize
+}
+
 #[cfg(test)]
 mod test {
-    use crate::solve_one;
+    use crate::{solve_one, solve_two};
 
     const INPUT: &str = "16,1,2,0,4,2,7,1,2,14";
 
     #[test]
     fn test_one() {
         assert_eq!(solve_one(&INPUT.to_string()), 37)
+    }
+
+    #[test]
+    fn test_two() {
+        assert_eq!(solve_two(&INPUT.to_string()), 168)
     }
 }
