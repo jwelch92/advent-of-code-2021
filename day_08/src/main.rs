@@ -43,8 +43,10 @@ fn solve_two(content: &String) -> usize {
     for i in "abcdefg".chars().permutations() {
         println!("{:?}", i);
     }
-
-
+    // Figure out which is 1, 4, and 7
+    // From there you can figure out the est of the numbers
+    // TODO do this one eventually :(
+    todo!();
 
     0
 }
