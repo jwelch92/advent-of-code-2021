@@ -3,41 +3,56 @@ use std::fs;
 fn main() {
     let contents: String = fs::read_to_string("input.txt").expect("Error opening file");
     // println!("{}", contents);
-    solve_one(&contents);
+    println!("Part 1 {}", solve_one(&contents));
 }
 
-fn risk_level(height: u8) -> u8 {
+fn risk_level(height: usize) -> usize {
     1 + height
 }
 
 fn solve_one(contents: &String) -> usize {
-    let mut lowest: Vec<u8> = vec![];
+    let mut lowest: Vec<usize> = vec![];
     let (grid, rows , cols) = parse_input(contents);
-    for y in 0..rows as isize {
-        for x in 0..cols as isize {
-            print!("{}", grid[y][x]);
+    for y in 0..rows {
+        for x in 0..cols {
+            print!("{}", grid[y as usize][x as usize]);
             // check left
-            if x -1 > 0 {
+            if x > 0 {
                 // not lowest from left
-                if grid[y][x -1] < grid[y][x] {
+                if grid[y][x -1] <= grid[y][x] {
                     continue
                 }
             }
             // check right
             if x + 1 < cols {
                 // not lowest from left
-                if grid[y][x + 1] < grid[y][x] {
+                if grid[y][x + 1] <= grid[y][x] {
                     continue
                 }
             }
-            // check up
-            // check down
 
+            // check up
+            if y > 0 {
+                if grid[y-1][x] <= grid[y][x] {
+                    continue
+                }
+            }
+            // check down
+            if y < rows - 1  {
+                if grid[y+1][x] <= grid[y][x] {
+                    continue
+                }
+            }
             lowest.push(grid[y][x]);
         }
         println!()
     }
-    lowest.iter().map(|x| risk_level(*x)).sum::<u8>() as usize
+    println!("Low nums {:?}", lowest);
+    let lowest_sum: usize = lowest.iter().map(|x| risk_level(*x)).sum::<usize>() as usize;
+    println!("low {}", lowest_sum);
+
+    lowest_sum
+
 }
 
 fn solve_two(content: &String) -> usize {
@@ -45,7 +60,7 @@ fn solve_two(content: &String) -> usize {
     0
 }
 
-fn parse_input(contents: &String) -> (Vec<Vec<u8>>, usize, usize) {
+fn parse_input(contents: &String) -> (Vec<Vec<usize>>, usize, usize) {
     let lines: Vec<&str> = contents.lines().collect();
     let rows_size: usize = lines.len();
     let col_size: usize = lines[0].chars().count();
@@ -56,7 +71,7 @@ fn parse_input(contents: &String) -> (Vec<Vec<u8>>, usize, usize) {
     for (i, line) in contents.trim().lines().enumerate() {
         for (j, c) in line.chars().enumerate() {
             println!("C is {:?}", c);
-            output[i][j] = String::from(c).parse::<u8>().unwrap()
+            output[i][j] = String::from(c).parse::<usize>().unwrap()
         }
     }
     (output, rows_size, col_size)
