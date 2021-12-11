@@ -3,7 +3,7 @@ use std::fs;
 fn main() {
     let contents: String = fs::read_to_string("input.txt").expect("Error opening file");
     solve_one(&contents);
-
+    solve_two(&contents);
 }
 
 fn risk_level(height: usize) -> usize {
@@ -66,9 +66,55 @@ fn find_lowest_points(grid: Vec<Vec<usize>>, rows: usize, cols: usize) -> Vec<(u
     lowest_points
 }
 
+fn find_basin<'a>(pos: (usize, usize), grid: &Vec<Vec<usize>>, rows: usize, cols: usize, path: &'a mut Vec<(usize, usize)>) {
+    let (y, x) =  pos;
+
+    if path.contains(&pos) || grid[y][x] == 9 {
+        return;
+    }
+
+    path.push((y, x));
+
+    if y > 0 {
+        let next_pos = (y -1, x);
+        find_basin(next_pos, &grid, rows, cols, path)
+    }
+
+    if y < rows - 1 {
+        let next_pos = (y  + 1, x);
+        find_basin(next_pos, &grid, rows, cols,path)
+    }
+
+    if x > 0 {
+        let next_pos = (y, x-1);
+        find_basin(next_pos, &grid, rows, cols,path)
+    }
+
+    if x < cols -1  {
+        let next_pos = (y, x + 1);
+        find_basin(next_pos, &grid, rows, cols, path)
+    }
+}
+
 fn solve_two(content: &String) -> usize {
-    todo!();
-    0
+    let (grid, rows , cols) = parse_input(content);
+    let lowest_points: Vec<(usize, usize)> = find_lowest_points(grid.to_vec(), rows, cols);
+    let mut basins: Vec<Vec<(usize, usize)>> = Vec::new();
+    for pos in lowest_points {
+        let mut current_basin : Vec<(usize, usize)> = vec!();
+        find_basin(pos, &grid, rows, cols, &mut current_basin);
+        basins.push(current_basin);
+    }
+    println!("{:?}", basins);
+
+    let mut basin_sizes: Vec<usize> = basins.iter().map(|x| x.len()).collect();
+    basin_sizes.sort();
+    basin_sizes.reverse();
+    let total = (0..3).fold(1, |acc, p| {
+        basin_sizes[p] * acc
+    });
+    println!("Total: {}", total);
+    total
 }
 
 fn parse_input(contents: &String) -> (Vec<Vec<usize>>, usize, usize) {
