@@ -2,17 +2,33 @@ use std::fs;
 
 fn main() {
     let contents: String = fs::read_to_string("input.txt").expect("Error opening file");
-    // println!("{}", contents);
-    println!("Part 1 {}", solve_one(&contents));
+    solve_one(&contents);
+
 }
 
 fn risk_level(height: usize) -> usize {
     1 + height
 }
 
+// Find lowest points as coordinates and return that instead since finding sum is easy given the coords
+// fn find_lowest_points(contents: &String)
+
+// For part 2
+// Using lowest points
+// Recursively find all points nearby that are not 9's
+// The size of the basin is the number of points
+// Find the 3 biggest and multiply their sizes together
+
 fn solve_one(contents: &String) -> usize {
-    let mut lowest: Vec<usize> = vec![];
     let (grid, rows , cols) = parse_input(contents);
+    let lowest_points: Vec<(usize, usize)> = find_lowest_points(grid.to_vec(), rows, cols);
+    let lowest_sum: usize = lowest_points.iter().map(|p| risk_level(grid[p.0][p.1])).sum::<usize>() as usize;
+    println!("low {}", lowest_sum);
+    lowest_sum
+}
+
+fn find_lowest_points(grid: Vec<Vec<usize>>, rows: usize, cols: usize) -> Vec<(usize, usize)> {
+    let mut lowest_points: Vec<(usize, usize)> = vec![];
     for y in 0..rows {
         for x in 0..cols {
             print!("{}", grid[y as usize][x as usize]);
@@ -43,16 +59,11 @@ fn solve_one(contents: &String) -> usize {
                     continue
                 }
             }
-            lowest.push(grid[y][x]);
+            lowest_points.push((y, x));
         }
         println!()
     }
-    println!("Low nums {:?}", lowest);
-    let lowest_sum: usize = lowest.iter().map(|x| risk_level(*x)).sum::<usize>() as usize;
-    println!("low {}", lowest_sum);
-
-    lowest_sum
-
+    lowest_points
 }
 
 fn solve_two(content: &String) -> usize {
@@ -92,5 +103,5 @@ fn test_one() {
 
 #[test]
 fn test_two() {
-    assert_eq!(solve_two(&TEST_INPUT.to_string()), 61229)
+    assert_eq!(solve_two(&TEST_INPUT.to_string()), 1134)
 }
