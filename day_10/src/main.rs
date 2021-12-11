@@ -17,6 +17,8 @@ fn score_char(c: char) -> usize {
     }
 }
 
+
+
 fn solve_one(contents: &String) -> usize {
     let mut invalid_chars: Vec<char> = vec![];
     for (lineno, line) in contents.trim().lines().enumerate() {
@@ -62,6 +64,7 @@ fn solve_one(contents: &String) -> usize {
 
             }
         }
+        println!("Chunks left: {:?}", chunks);
     }
     let score: usize = invalid_chars.iter().fold(0, |acc, x| {
         acc + score_char(*x)
@@ -70,7 +73,24 @@ fn solve_one(contents: &String) -> usize {
     score
 }
 
+fn score_added_chars(added: Vec<char>) -> usize {
+    added.iter().fold(0, |acc, x| {
+        let increase = match x {
+            ')' => 1,
+            ']' => 2,
+            '}' => 3,
+            '>' => 4,
+            _ => 0,
+        };
+        (acc * 5) + increase
+    })
+}
+
+
 fn solve_two(contents: &String) -> usize {
+    // Discard corrupted lines so skip if we don't find a matching pair
+    // Instead push all chars
+    // Just return each Left over chunks and complete the stack!!!! See above on line 67!
     todo!();
     0
 }
@@ -96,4 +116,9 @@ fn test_one() {
 #[test]
 fn test_two() {
     assert_eq!(solve_two(&TEST_INPUT.to_string()), 0)
+}
+
+#[test]
+fn test_part_scorer() {
+    assert_eq!(score_added_chars(vec![']', ')', '}', '>']), 294)
 }
