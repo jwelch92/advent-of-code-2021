@@ -1,5 +1,5 @@
 use std::borrow::Borrow;
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::fs;
 
 fn main() {
@@ -32,27 +32,26 @@ impl Graph {
             println!("Hit the end for this path! {}", cave);
             return 1;
         }
-        println!("Seen {:?}", seen);
-        if seen.contains(cave) && cave == &"start" {
-            println!("cave {} is seen and is start", cave);
-            return 0;
-        }
-
-        let is_lower = cave.chars().all(|c| c.is_lowercase());
-        if seen.contains(cave) && is_lower {
-            println!("Cave {} is lower and in seen", cave);
-            return 0;
-        }
-
-        let c = cave.clone().to_owned();
-        seen.insert(c);
-        println!("Seen after insert {:?}", seen);
         let mut out: usize = 0;
-        for x in self.adj_list.get(cave).unwrap().iter() {
-            println!("next cave {}", x);
-            out += self.find_paths(seen, x)
+        for next_cave in self.adj_list.get(cave).unwrap().iter() {
+           if next_cave.chars().all(|c| c.is_lowercase()) {
+               if !seen.contains(next_cave) {
+                   seen.insert(next_cave.clone());
+                   out += self.find_paths(seen, next_cave);
+               }
+           } else {
+               out += self.find_paths(seen, next_cave);
+           }
         }
         out
+    }
+
+    fn count_paths_non_recur(&self) -> usize {
+        let mut queue: VecDeque<Vec<&String>> = VecDeque::new();
+        queue.push_back(vec![&String::from("start")]);
+        let mut count = 0;
+
+        // Try using deq soln as the recursive one does not seem to work for me :/
     }
 
 }
