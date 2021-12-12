@@ -26,34 +26,31 @@ impl Graph {
         self.adj_list.entry(String::from(b)).or_insert_with(Vec::new).push(String::from(a));
     }
 
-    fn find_paths(&self, seen: &mut HashSet<String>, cave: &String, mut part: usize) -> usize {
-        println!("Stuff!");
+    fn find_paths(&self, seen: &mut HashSet<String>, cave: &String) -> usize {
+        println!("On cave {}", cave);
         if cave == &"end" {
+            println!("Hit the end for this path! {}", cave);
             return 1;
         }
         println!("Seen {:?}", seen);
-        if seen.contains(cave) {
-            println!("Seen has {}", cave);
-            if cave == &"start" {
-                return 0
-            }
-            let is_lower = cave.find(char::is_lowercase).is_none();
-            println!("Cave is lower: {} {}", cave, is_lower);
-            if  is_lower {
-                if part == 1 {
-                    return 0;
-                } else {
-                    part = 1;
-                }
-            }
+        if seen.contains(cave) && cave == &"start" {
+            println!("cave {} is seen and is start", cave);
+            return 0;
         }
 
-        let c = cave.clone();
+        let is_lower = cave.chars().all(|c| c.is_lowercase());
+        if seen.contains(cave) && is_lower {
+            println!("Cave {} is lower and in seen", cave);
+            return 0;
+        }
+
+        let c = cave.clone().to_owned();
         seen.insert(c);
         println!("Seen after insert {:?}", seen);
         let mut out: usize = 0;
         for x in self.adj_list.get(cave).unwrap().iter() {
-            out += self.find_paths(seen, x, part)
+            println!("next cave {}", x);
+            out += self.find_paths(seen, x)
         }
         out
     }
@@ -71,8 +68,8 @@ fn solve_one(contents: &String) -> usize {
 
     println!("{:?}", graph.adj_list);
     let mut seen: HashSet<String> = HashSet::new();
-    seen.insert(String::from("start"));
-    graph.find_paths(&mut seen, &String::from("start"), 1)
+    // seen.insert(String::from("start"));
+    graph.find_paths(&mut seen, &String::from("start"))
 }
 
 fn solve_two(contents: &String) -> usize {
