@@ -17,11 +17,14 @@ fn count_measurements(contents: &String) -> u16 {
                     increased += 1;
                 }
                 previous = x;
-            },
-            Err(_) => ()
+            }
+            Err(_) => (),
         }
     });
-    println!("There are {} measurements greater than the previous", increased);
+    println!(
+        "There are {} measurements greater than the previous",
+        increased
+    );
     increased
 }
 
@@ -31,7 +34,7 @@ fn count_in_windows(contents: &String) -> u16 {
     let mut increased_windows: u16 = 0;
     lines.windows(3).for_each({
         |x| {
-            let window_total: u16 = x.iter().map(|y| y.parse::<u16>().unwrap() ).sum();
+            let window_total: u16 = x.iter().map(|y| y.parse::<u16>().unwrap()).sum();
             if window_total > last_window {
                 increased_windows += 1;
             }
@@ -39,7 +42,10 @@ fn count_in_windows(contents: &String) -> u16 {
         }
     });
 
-    println!("There are {} measurement windows greater than the previous", increased_windows);
+    println!(
+        "There are {} measurement windows greater than the previous",
+        increased_windows
+    );
     increased_windows
 }
 
@@ -54,7 +60,8 @@ fn test_counts() {
 240
 269
 260
-263".to_string();
+263"
+    .to_string();
     println!("{}", input);
     assert_eq!(count_measurements(&input), 7);
     assert_eq!(count_in_windows(&input), 5);
